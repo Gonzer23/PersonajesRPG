@@ -19,11 +19,11 @@
   },
   {
     "$tipo": "Arquero",
-    "TipoArco": "Recurvo",
-    "Precision": 0,
-    "Nombre": "Johan",
+    "TipoArco": "Ballesta",
+    "Precision": 30,
+    "Nombre": "Joahn",
     "Nivel": 20,
-    "PuntosVida": 40,
-    "Experiencia": 12
+    "PuntosVida": 12,
+    "Experiencia": 48
   }
 ]

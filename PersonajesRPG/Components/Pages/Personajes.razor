@@ -1,0 +1,266 @@
+﻿@page "/personajes"
+@rendermode InteractiveServer
+
+@using PersonajesRPG.Models
+@using PersonajesRPG.Services
+@inject PersonajeJsonService PersonajeService
+
+<h3>Registro de Personajes RPG</h3>
+
+<EditForm Model="formulario" OnValidSubmit="RegistrarPersonaje">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Tipo de personaje</label>
+        <InputSelect class="form-control" @bind-Value="formulario.TipoPersonaje">
+            <option value="">Seleccione un tipo</option>
+            <option value="Guerrero">Guerrero</option>
+            <option value="Mago">Mago</option>
+            <option value="Arquero">Arquero</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => formulario.TipoPersonaje)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Nombre del personaje</label>
+        <InputText class="form-control" @bind-Value="formulario.Nombre" />
+        <ValidationMessage For="@(() => formulario.Nombre)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Nivel</label>
+        <InputNumber class="form-control" @bind-Value="formulario.Nivel" />
+        <ValidationMessage For="@(() => formulario.Nivel)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Puntos de vida</label>
+        <InputNumber class="form-control" @bind-Value="formulario.PuntosVida" />
+        <ValidationMessage For="@(() => formulario.PuntosVida)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Experiencia actual</label>
+        <InputNumber class="form-control" @bind-Value="formulario.Experiencia" />
+        <ValidationMessage For="@(() => formulario.Experiencia)" />
+    </div>
+
+    @if (formulario.TipoPersonaje == "Guerrero")
+    {
+        <h5>Datos específicos del Guerrero</h5>
+
+        <div class="mb-3">
+            <label>Tipo de arma</label>
+            <InputSelect class="form-control" @bind-Value="formulario.TipoArma">
+                <option value="">Seleccione arma</option>
+                <option value="Espada">Espada</option>
+                <option value="Hacha">Hacha</option>
+                <option value="Martillo">Martillo</option>
+                <option value="Lanza">Lanza</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => formulario.TipoArma)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Defensa física</label>
+            <InputNumber class="form-control" @bind-Value="formulario.DefensaFisica" />
+            <ValidationMessage For="@(() => formulario.DefensaFisica)" />
+        </div>
+    }
+
+    @if (formulario.TipoPersonaje == "Mago")
+    {
+        <h5>Datos específicos del Mago</h5>
+
+        <div class="mb-3">
+            <label>Escuela de magia</label>
+            <InputSelect class="form-control" @bind-Value="formulario.EscuelaMagia">
+                <option value="">Seleccione escuela</option>
+                <option value="Fuego">Fuego</option>
+                <option value="Hielo">Hielo</option>
+                <option value="Oscuridad">Oscuridad</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => formulario.EscuelaMagia)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Mana</label>
+            <InputNumber class="form-control" @bind-Value="formulario.Mana" />
+            <ValidationMessage For="@(() => formulario.Mana)" />
+        </div>
+    }
+
+    @if (formulario.TipoPersonaje == "Arquero")
+    {
+        <h5>Datos específicos del Arquero</h5>
+
+        <div class="mb-3">
+            <label>Tipo de arco</label>
+            <InputSelect class="form-control" @bind-Value="formulario.TipoArco">
+                <option value="">Seleccione arco</option>
+                <option value="Compuesto">Compuesto</option>
+                <option value="Largo">Largo</option>
+                <option value="Recurvo">Recurvo</option>
+                <option value="Ballesta">Ballesta</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => formulario.TipoArco)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Precisión</label>
+            <InputNumber class="form-control" @bind-Value="formulario.Precision" />
+            <ValidationMessage For="@(() => formulario.Precision)" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Registrar personaje</button>
+
+    <button type="button" class="btn btn-secondary ms-2" @onclick="LimpiarFormulario">
+        Limpiar
+    </button>
+</EditForm>
+
+<hr />
+
+<h4>Personajes registrados</h4>
+
+<p>
+    <strong>Total de personajes creados:</strong> @personajes.Count
+</p>
+
+@if (personajes.Count == 0)
+{
+    <p>No hay personajes registrados.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Nivel</th>
+                <th>Vida</th>
+                <th>Experiencia</th>
+                <th>Datos específicos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var personaje in personajes)
+            {
+                <tr>
+                    <td>@personaje.Nombre</td>
+                    <td>@ObtenerTipo(personaje)</td>
+                    <td>@personaje.Nivel</td>
+                    <td>@personaje.PuntosVida</td>
+                    <td>@personaje.Experiencia</td>
+                    <td>@ObtenerDatosEspecificos(personaje)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private PersonajeFormulario formulario = new PersonajeFormulario();
+    private List<Personaje> personajes = new List<Personaje>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        personajes = await PersonajeService.ObtenerPersonajesAsync();
+    }
+
+    private async Task RegistrarPersonaje()
+    {
+        Personaje nuevoPersonaje;
+
+        if (formulario.TipoPersonaje == "Guerrero")
+        {
+            nuevoPersonaje = new Guerrero
+            {
+                Nombre = formulario.Nombre,
+                Nivel = formulario.Nivel,
+                PuntosVida = formulario.PuntosVida,
+                Experiencia = formulario.Experiencia,
+                TipoArma = formulario.TipoArma,
+                DefensaFisica = formulario.DefensaFisica
+            };
+        }
+        else if (formulario.TipoPersonaje == "Mago")
+        {
+            nuevoPersonaje = new Mago
+            {
+                Nombre = formulario.Nombre,
+                Nivel = formulario.Nivel,
+                PuntosVida = formulario.PuntosVida,
+                Experiencia = formulario.Experiencia,
+                EscuelaMagia = formulario.EscuelaMagia,
+                Mana = formulario.Mana
+            };
+        }
+        else
+        {
+            nuevoPersonaje = new Arquero
+            {
+                Nombre = formulario.Nombre,
+                Nivel = formulario.Nivel,
+                PuntosVida = formulario.PuntosVida,
+                Experiencia = formulario.Experiencia,
+                TipoArco = formulario.TipoArco,
+                Precision = formulario.Precision
+            };
+        }
+
+        personajes.Add(nuevoPersonaje);
+
+        await PersonajeService.GuardarPersonajesAsync(personajes);
+
+        LimpiarFormulario();
+    }
+
+    private void LimpiarFormulario()
+    {
+        formulario = new PersonajeFormulario();
+    }
+
+    private string ObtenerTipo(Personaje personaje)
+    {
+        if (personaje is Guerrero)
+        {
+            return "Guerrero";
+        }
+
+        if (personaje is Mago)
+        {
+            return "Mago";
+        }
+
+        if (personaje is Arquero)
+        {
+            return "Arquero";
+        }
+
+        return "";
+    }
+
+    private string ObtenerDatosEspecificos(Personaje personaje)
+    {
+        if (personaje is Guerrero guerrero)
+        {
+            return $"Arma: {guerrero.TipoArma}, Defensa física: {guerrero.DefensaFisica}";
+        }
+
+        if (personaje is Mago mago)
+        {
+            return $"Escuela: {mago.EscuelaMagia}, Mana: {mago.Mana}";
+        }
+
+        if (personaje is Arquero arquero)
+        {
+            return $"Arco: {arquero.TipoArco}, Precisión: {arquero.Precision}%";
+        }
+
+        return "";
+    }
+}

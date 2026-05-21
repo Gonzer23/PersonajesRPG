@@ -1,3 +1,29 @@
 [
-
+  {
+    "$tipo": "Guerrero",
+    "TipoArma": "Espada",
+    "DefensaFisica": 7,
+    "Nombre": "Robert",
+    "Nivel": 5,
+    "PuntosVida": 20,
+    "Experiencia": 7
+  },
+  {
+    "$tipo": "Mago",
+    "EscuelaMagia": "Fuego",
+    "Mana": 288,
+    "Nombre": "Marcos",
+    "Nivel": 30,
+    "PuntosVida": 45,
+    "Experiencia": 3
+  },
+  {
+    "$tipo": "Arquero",
+    "TipoArco": "Recurvo",
+    "Precision": 0,
+    "Nombre": "Johan",
+    "Nivel": 20,
+    "PuntosVida": 40,
+    "Experiencia": 12
+  }
 ]

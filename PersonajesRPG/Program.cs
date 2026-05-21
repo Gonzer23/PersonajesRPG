@@ -1,6 +1,7 @@
 using PersonajesRPG.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<PersonajesRPG.Services.PersonajeJsonService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
